@@ -1,0 +1,26 @@
+{
+	"api": {
+		"url": "",
+		"key": ""
+	},
+
+	"discord": {
+		"token": ""
+	},
+
+	"twitch": {
+		"options": {
+			"debug": false
+		},
+		"connection": {
+			"reconnect": true
+		},
+		"identity": {
+			"username": "",
+			"password": ""
+		},
+
+		"channels": ["#"]
+	}
+
+}
