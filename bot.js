@@ -14,7 +14,6 @@ console.log(" ")
 // LIBRARIES
 const fs = require("fs")
 const colors = require("colors")
-const request = require("request")
 
 const tmijs = require("twitch-js")
 const APIjs = require("./app/API.js")

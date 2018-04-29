@@ -7,6 +7,10 @@ const fs = require("fs")
 const request = require("request")
 const settings = JSON.parse(fs.readFileSync("app/config.json"))
 
+// FIX: SSLv3 HANDSHAKE FAILURE
+const tls = require('tls')
+tls.DEFAULT_ECDH_CURVE = 'auto'
+
 module.exports = class API {
 
 	constructor() {
