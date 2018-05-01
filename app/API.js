@@ -22,7 +22,7 @@ module.exports = class API {
 
 	/**
 	 * POST - Adds a new Event
-	 * 
+	 *
 	 * @param {string} type Discord|Twitch
 	 * @param {JSON} event {userid, type, content}
 	 * @returns {Promise}
@@ -48,7 +48,7 @@ module.exports = class API {
 
 	/**
 	 * POST - Adds a new Message
-	 * 
+	 *
 	 * @param {string} type Discord|Twitch
 	 * @param {JSON} message {userid, channel, content, [id]}
 	 * @returns {Promise}
@@ -58,7 +58,7 @@ module.exports = class API {
 		return new Promise((resolve, reject) => {
 
 			request(this.url + type.toLowerCase() + "/messages", {method: "POST", headers: {}, form: message}, (errors, response, body) => {
-				
+
 				if (errors || response.statusCode != 201) {
 					reject({"errors": "TrashMates API: " + type + " Message creation failed"})
 				} else {
@@ -74,7 +74,7 @@ module.exports = class API {
 
 	/**
 	 * POST - Adds a new Viewer
-	 * 
+	 *
 	 * @param {string} type Discord|Twitch
 	 * @param {JSON} viewer {userid, username, role, [discriminator]}
 	 * @returns {Promise}
@@ -84,7 +84,7 @@ module.exports = class API {
 		return new Promise((resolve, reject) => {
 
 			request(this.url + type.toLowerCase() + "/viewers", {method: "POST", headers: {}, form: viewer}, (errors, response, body) => {
-				
+
 				if (errors || response.statusCode != 201) {
 					reject({"errors": "TrashMates API: " + type + " Viewer creation failed"})
 				} else {
@@ -92,6 +92,11 @@ module.exports = class API {
 						"userid": viewer.userid,
 						"type": "VIEWER_CREATED",
 						"content": viewer.username + " was created"
+					}
+
+					if (type == "Discord") {
+						event_data.type = "MEMBER_JOINED"
+						event_data.content = viewer.username + "#" + viewer.discriminator + " has joined the server"
 					}
 
 					this.createEvent(type, event_data).then((event) => {
@@ -110,9 +115,9 @@ module.exports = class API {
 
 	/**
 	 * GET - Retrives the Viewer
-	 * 
+	 *
 	 * @param {string} type Discord|Twitch
-	 * @param {Number} viewerid 
+	 * @param {Number} viewerid
 	 * @returns {Promise}
 	 */
 	fetchViewer(type, viewerid) {
@@ -136,7 +141,7 @@ module.exports = class API {
 
 	/**
 	 * PATCH - Updates the Viewer
-	 * 
+	 *
 	 * @param {string} type Discord|Twitch
 	 * @param {JSON} viewer {username, role, [discriminator]}
 	 * @returns {Promise}
@@ -149,7 +154,7 @@ module.exports = class API {
 
 			request(this.url + type.toLowerCase() + "/viewer/" + viewer.userid, {method: "POST", headers: {}, form: viewer}, (errors, response, body) => {
 
-				if (errors || response.statusCode != 201) {
+				if (errors || response.statusCode != 200) {
 					reject({"errors": "TrashMates API: " + type + " Viewer updating failed"})
 				} else {
 					resolve(JSON.parse(body))
