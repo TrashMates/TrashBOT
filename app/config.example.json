@@ -1,26 +1,87 @@
 {
+	
 	"api": {
-		"url": "",
-		"key": ""
-	},
 
-	"discord": {
-		"token": ""
+		"trashmates": {
+			"url": "Your Website here (https://github.com/TrashMates/TrashWEB)",
+			"token": "Your Website Token here"
+		},
+			
+		"twitch": {
+			"url": "https://api.twitch.tv/helix/",
+			"key": "Your Twitch Application Client-ID here (https://dev.twitch.tv/dashboard/apps)",
+				
+			"userid": 118757111,
+			"username": "TrashMates"
+		}
+		
 	},
+	
+	"discord": {
+
+		"channel_name": "Your Discord Channel here",
+		"server_id": "Your Discord Server ID here",
+
+		"embed": {
+			"title": "Nous sommes en live !",
+			"url": "https://twitch.tv/trashmates",
+			"color": 11941430,
+
+			"footer": {
+				"icon_url": "https://trashmates.fr/images/trashmates.png",
+				"text": " -- AUTO UPDATED -- "
+			},
+
+			"thumbnail": {
+				"url": "https://trashmates.fr/images/trashmates.png"
+			},
+
+			"image": {
+				"url": "  -- AUTO UPDATED -- "
+			},
+
+			"author": {
+				"name": "TrashBOT",
+				"url": "https://twitch.tv/TrashMates",
+				"icon_url": "https://trashmates.fr/images/trashmates.png"
+			},
+
+			"fields": [
+				{
+					"name": "TITRE",
+					"value": " -- AUTO UPDATED -- ",
+					"inline": true
+				},
+				{
+					"name": "JEU",
+					"value": " -- AUTO UPDATED -- ",
+					"inline": true
+				}
+			]
+
+		},
+
+		"token": "Your Discord Application Token here (https://discordapp.com/developers/applications/me)"
+
+		},
 
 	"twitch": {
+
+		"channels": ["#TrashMates"],
+
 		"options": {
 			"debug": false
 		},
+
 		"connection": {
 			"reconnect": true
 		},
+
 		"identity": {
-			"username": "",
-			"password": ""
-		},
+			"username": "Your username here",
+			"password": "Your OAuth Token here (https://twitchapps.com/tmi/)"
+		}
 
-		"channels": ["#"]
 	}
-
+	
 }

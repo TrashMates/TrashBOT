@@ -15,8 +15,16 @@ module.exports = class API {
 
 	constructor() {
 
-		this.url = settings.api.url
-		this.key = settings.api.key
+		this.trashmates = {}
+		this.trashmates.url = settings.api.trashmates.url
+		this.trashmates.token = settings.api.trashmates.token
+
+		this.twitch = {}
+		this.twitch.userid = settings.api.twitch.userid
+		this.twitch.url = settings.api.twitch.url
+		this.twitch.key = settings.api.twitch.key
+
+		this.followers = []
 	}
 
 
@@ -31,7 +39,7 @@ module.exports = class API {
 
 		return new Promise((resolve, reject) => {
 
-			request.post(this.url + type.toLowerCase() + "/events/", {method: "POST", headers: {}, form: event}, (errors, response, body) => {
+			request.post(this.trashmates.url + type.toLowerCase() + "/events/", {method: "POST", headers: {"token": this.trashmates.token}, form: event}, (errors, response, body) => {
 
 				if (errors || response.statusCode != 201) {
 					reject({"errors": "TrashMates API: " + type + " Event creation failed"})
@@ -57,7 +65,7 @@ module.exports = class API {
 
 		return new Promise((resolve, reject) => {
 
-			request(this.url + type.toLowerCase() + "/messages", {method: "POST", headers: {}, form: message}, (errors, response, body) => {
+			request(this.trashmates.url + type.toLowerCase() + "/messages", {method: "POST", headers: {"token": this.trashmates.token}, form: message}, (errors, response, body) => {
 
 				if (errors || response.statusCode != 201) {
 					reject({"errors": "TrashMates API: " + type + " Message creation failed"})
@@ -83,7 +91,7 @@ module.exports = class API {
 
 		return new Promise((resolve, reject) => {
 
-			request(this.url + type.toLowerCase() + "/viewers", {method: "POST", headers: {}, form: viewer}, (errors, response, body) => {
+			request(this.trashmates.url + type.toLowerCase() + "/viewers", {method: "POST", headers: {"token": this.trashmates.token}, form: viewer}, (errors, response, body) => {
 
 				if (errors || response.statusCode != 201) {
 					reject({"errors": "TrashMates API: " + type + " Viewer creation failed"})
@@ -124,7 +132,7 @@ module.exports = class API {
 
 		return new Promise((resolve, reject) => {
 
-			request(this.url + type.toLowerCase() + "/viewer/" + viewerid, {method: "GET", headers: {}}, (errors, response, body) => {
+			request(this.trashmates.url + type.toLowerCase() + "/viewer/" + viewerid, {method: "GET", headers: {"token": this.trashmates.token}}, (errors, response, body) => {
 
 				if (errors || response.statusCode != 200 || JSON.parse(body).hasOwnProperty("errors")) {
 					reject({"errors": "TrashMates API: " + type + " Viewer retrieving failed"})
@@ -152,7 +160,7 @@ module.exports = class API {
 
 		return new Promise((resolve, reject) => {
 
-			request(this.url + type.toLowerCase() + "/viewer/" + viewer.userid, {method: "POST", headers: {}, form: viewer}, (errors, response, body) => {
+			request(this.trashmates.url + type.toLowerCase() + "/viewer/" + viewer.userid, {method: "POST", headers: {"token": this.trashmates.token}, form: viewer}, (errors, response, body) => {
 
 				if (errors || response.statusCode != 200) {
 					reject({"errors": "TrashMates API: " + type + " Viewer updating failed"})
@@ -166,4 +174,127 @@ module.exports = class API {
 
 	}
 
+
+	/**
+	 * GET - Fetch the 100 latest followers ID, from the Twitch API
+	 */
+	fetchLatestFollowersID() {
+
+		return new Promise((resolve, reject) => {
+
+			request(this.twitch.url + "users/follows?first=100&to_id=" + this.twitch.userid, {method: "GET", headers: {"Client-ID": this.twitch.key}}, (errors, response, body) => {
+
+				if (errors || response.statusCode != 200) {
+					reject({"errors": "Twitch API: Fetch Latest Followers ID failed"})
+				} else {
+					resolve(JSON.parse(body).data)
+				}
+
+			})
+
+		})
+
+	}
+
+	/**
+	 * GET - Fetch the 100 latest followers informations, from the Twitch API
+	 */
+	fetchLatestFollowers() {
+
+		return new Promise((resolve, reject) => {
+
+			this.fetchLatestFollowersID().then((followers) => {
+
+				let url = this.twitch.url + "users/?id="
+				followers.forEach((follower) => {
+					if (this.followers.indexOf(follower.from_id) < 0) {
+						this.followers.push(follower.from_id)
+
+						url += follower.from_id + "&id="
+					}
+				})
+
+				// We make a GET request to the Twitch API if the generated url
+				// looks like https://twitch.tv/helix/users/?id=XXX,&id=
+				// (and we remove the last 4 chars)
+				let generated_url = url.slice(0, -4)
+
+				if (generated_url != this.twitch.url + "users/") {
+					request(generated_url, {method: "GET", headers: {"Client-ID": this.twitch.key}}, (errors, response, body) => {
+
+						if (errors || response.statusCode != 200) {
+							reject({"errros": "Twitch API: Fetch Latest Followers failed"})
+						} else {
+							resolve(JSON.parse(body).data)
+						}
+
+					})
+				}
+
+			}).catch((errors) => {
+				console.log(" - " + "ERROR WHILE FETCHING LATEST FOLLOWERS ID".red)
+			})
+
+		})
+
+	}
+
+
+	/**
+	 * GET - Fetch the Stream data for the Twitch User, from the Twitch API
+	 */
+	fetchStream() {
+
+		return new Promise((resolve, reject) => {
+
+			request(this.twitch.url + "streams?user_id=" + this.twitch.userid, {method: "GET", headers: {"Client-ID": this.twitch.key}}, (errors, response, body) => {
+
+				if (errors || response.statusCode != 200) {
+					reject({"errors": "Twitch API: Fetch Stream failed"})
+				} else {
+					let json = JSON.parse(body).data
+
+					if (json.length > 0)
+					{	
+						json = json[0]
+						
+						this.fetchGame(json.game_id).then((game) => {
+							json.game = game[0]
+							resolve(json)
+						}).catch((errors) => {
+							reject({"errors": "Twitch API: Fetch Stream failed"})
+						})
+					} else {
+						resolve([])
+					}
+				}
+
+			})
+
+		})
+
+	}
+
+	/**
+	 * GET - Fetch tha Game daa for the Twitch Game ID, from the Twitch API
+	 * 
+	 * @param {int|string} gameid 
+	 */
+	fetchGame(gameid) {
+
+		return new Promise((resolve, reject) => {
+
+			request(this.twitch.url + "games?id=" + gameid, {method: "GET", headers: {"Client-ID": this.twitch.key}}, (errors, response, body) => {
+
+				if (errors || response.statusCode != 200) {
+					reject({"errors": "Twitch API: Fetch Game failed"})
+				} else {
+					resolve(JSON.parse(body).data)
+				}
+
+			})
+
+		})
+
+	}
 }
