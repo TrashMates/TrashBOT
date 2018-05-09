@@ -57,6 +57,11 @@ module.exports = class Events {
                     "content": viewer.username + " has changed username: " + viewer_data.username
                 }
 
+                // We don't wanna change the Role of the user, only its username
+                // If it became a Sub or a Follower, it should have been modfied
+                // If it became a Streamer or a Moderator, we should have changed it manually
+                viewer_data.role = viewer.role
+
                 API.updateViewer("Twitch", viewer_data).then((viewer_updated) => {
                     API.createEvent("Twitch", event_data).then((event) => {}).catch((error) => {
                         console.log(" - " + "TrashMates API: CREATE EVENT FAILED".red)
