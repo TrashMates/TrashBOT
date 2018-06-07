@@ -132,7 +132,7 @@ module.exports = class API {
 
 		return new Promise((resolve, reject) => {
 
-			request(this.trashmates.url + type.toLowerCase() + "/viewer/" + viewerid, {method: "GET", headers: {"token": this.trashmates.token}}, (errors, response, body) => {
+			request(this.trashmates.url + type.toLowerCase() + "/viewers/" + viewerid, {method: "GET", headers: {"token": this.trashmates.token}}, (errors, response, body) => {
 
 				if (errors || response.statusCode != 200 || JSON.parse(body).hasOwnProperty("errors")) {
 					reject({"errors": "TrashMates API: " + type + " Viewer retrieving failed"})
@@ -160,7 +160,7 @@ module.exports = class API {
 
 		return new Promise((resolve, reject) => {
 
-			request(this.trashmates.url + type.toLowerCase() + "/viewer/" + viewer.userid, {method: "POST", headers: {"token": this.trashmates.token}, form: viewer}, (errors, response, body) => {
+			request(this.trashmates.url + type.toLowerCase() + "/viewers/" + viewer.id, {method: "POST", headers: {"token": this.trashmates.token}, form: viewer}, (errors, response, body) => {
 
 				if (errors || response.statusCode != 200) {
 					reject({"errors": "TrashMates API: " + type + " Viewer updating failed"})
