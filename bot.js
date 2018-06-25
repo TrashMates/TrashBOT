@@ -6,7 +6,7 @@ console.log('\033c');
 console.log(" ")
 console.log(" *** ")
 console.log(" * TrashBOT")
-console.log(" * VERSION: V3.00")
+console.log(" * VERSION: V3.01")
 console.log(" *** ")
 console.log(" ")
 

@@ -114,7 +114,7 @@ module.exports = class Events {
 
         API.fetchViewer("Twitch", viewer_data.id).then((viewer) => {
 
-            if (viewer_role == "Viewer") {
+            if (viewer.role == "Viewer") {
                 API.updateViewer("Twitch", viewer_data).then((updated_viewer) => {
                     console.log(" - " + (viewer_data.id).green + " has followed the channel")
                 }).catch((errors) => {
