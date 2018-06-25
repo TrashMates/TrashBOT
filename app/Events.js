@@ -155,8 +155,10 @@ module.exports = class Events {
     static onTwitchSubscription(channel, username, method, message, userstate) {
 
         let viewer_data = {
-            "viewer_id": userstate["user-id"],
+            "id": userstate["user-id"],
             "username": userstate["display-name"] || userstate["username"],
+            // When subbing, the user is still a 'viewer'.
+            // We wanna change his role only if he's a viewer, not if he's a sub or moderator
             "role": Events.getTwitchHighestRole(userstate) == "Viewer" ? "Subscriber" : Events.getTwitchHighestRole(userstate)
         }
 
@@ -192,6 +194,149 @@ module.exports = class Events {
                 console.log(" - " + "TrashMates API: CREATE VIEWER FAILED".red)
                 console.log(" - " + (viewer_data.id).red + " has subscribed to the channel!")
             })
+        })
+
+    }
+
+    /**
+     * Triggered when a Twitch User has cheered to the Twitch Channel
+     * @param {string} channel 
+     * @param {object} userstate 
+     * @param {string} message 
+     */
+    static onTwitchCheer(channel, userstate, message) {
+
+        let viewer_data = {
+            "id": userstate["user-id"],
+            "username": userstate["display-name"] || userstate["username"],
+            "role": Events.getTwitchHighestRole(userstate)
+        }
+
+        let event_data = {
+            "viewer_id": userstate["user-id"],
+            "type": "VIEWER_CHEERED",
+            "content": `${viewer_data.username} cheered ${userstate.bits} to the channel!`
+        }
+
+        if (message) {event_data.content += " [" + message + "]"}
+
+
+        API.fetchViewer("Twitch", viewer_data.id).then((viewer) => {
+            API.createEvent("Twitch", event_data).then((event) => {
+                console.log(" - " + (viewer_data.id).green + " has cheered to the channel!")
+            }).catch((error) => {
+                console.log(" - " + "TrashMates API: CREATE EVENT FAILED".red)
+            })
+        }).catch((error) => {
+            API.createViewer("Twitch", viewer_data).then((viewer) => {
+                API.createEvent("Twitch", event_data).then((event) => {
+                    console.log(" - " + (viewer_data.id).green + " has cheered to the channel!")
+                }).catch((error) => {
+                    console.log(" - " + "TrashMates API: CREATE EVENT FAILED".red)
+                    console.log(" - " + (viewer_data.id).yellow + " has cheered to the channel!")
+                })
+            }).catch((error) => {
+                console.log(" - " + "TrashMates API: CREATE VIEWER FAILED".red)
+                console.log(" - " + (viewer_data.id).red + " has cheered to the channel!")
+            })
+        })
+    }
+
+    /**
+     * Triggered when a Twitch User has hosted the Twitch Channel
+     * @param {string} channel 
+     * @param {string} username 
+     * @param {Number} viewers 
+     * @param {boolean} autohost 
+     */
+    static onTwitchHosted(channel, username, viewers, autohost) {
+
+        API.fetchViewerFromTwitchByUsername(username).then((user) => {
+            let viewer_data = {
+                "id": user.id,
+                "username": user.display_name || user.login,
+                "role": 'Viewer'
+            }
+            
+            let event_data = {
+                "viewer_id": user.id,
+                "type": "VIEWER_HOSTING",
+                "content": `${viewer_data.username} has hosted the channel for ${viewers} viewers!`
+            }
+            
+            if (autohost) {event_data.content += " [AUTOHOST]"}
+
+            API.fetchViewer("Twitch", viewer_data.id).then((viewer) => {
+                API.createEvent("Twitch", event_data).then((event) => {
+                    console.log(" - " + (viewer_data.id).green + " has hosted the channel!")
+                }).catch((error) => {
+                    console.log(" - " + "TrashMates API: CREATE EVENT FAILED".red)
+                })
+            }).catch((error) => {
+                API.createViewer("Twitch", viewer_data).then((viewer) => {
+                    API.createEvent("Twitch", event_data).then((event) => {
+                        console.log(" - " + (viewer_data.id).green + " has hosted the channel!")
+                    }).catch((error) => {
+                        console.log(" - " + "TrashMates API: CREATE EVENT FAILED".red)
+                        console.log(" - " + (viewer_data.id).yellow + " has hosted the channel!")
+                    })
+                }).catch((error) => {
+                    console.log(" - " + "TrashMates API: CREATE VIEWER FAILED".red)
+                    console.log(" - " + (viewer_data.id).red + " has hosted the channel!")
+                })
+            })
+        }).catch((error) => {
+            console.log(error)
+            console.log(" - " + "Twitch API: FETCH VIEWER FAILED".red)
+        })
+
+    }
+
+    /**
+     * Triggered when a Twitch User was banned from the Twitch Channel
+     * @param {string} channel 
+     * @param {object} username 
+     * @param {reason} reason
+     */
+    static onTwitchBan(channel, username, reason) {
+
+        API.fetchViewerFromTwitchByUsername(username).then((user) => {
+            let viewer_data = {
+                "id": user.id,
+                "username": user.display_name || user.login,
+                "role": 'Viewer'
+            }
+            
+            let event_data = {
+                "viewer_id": user.id,
+                "type": "VIEWER_BANNED",
+                "content": `${viewer_data.username} was banned from the channel!`
+            }
+            
+            if (reason) {event_data.content += " [" + reason + "]"}
+
+            API.fetchViewer("Twitch", viewer_data.id).then((viewer) => {
+                API.createEvent("Twitch", event_data).then((event) => {
+                    console.log(" - " + (viewer_data.id).green + " was banned from the channel!")
+                }).catch((error) => {
+                    console.log(" - " + "TrashMates API: CREATE EVENT FAILED".red)
+                })
+            }).catch((error) => {
+                API.createViewer("Twitch", viewer_data).then((viewer) => {
+                    API.createEvent("Twitch", event_data).then((event) => {
+                        console.log(" - " + (viewer_data.id).green + " was banned from the channel!")
+                    }).catch((error) => {
+                        console.log(" - " + "TrashMates API: CREATE EVENT FAILED".red)
+                        console.log(" - " + (viewer_data.id).yellow + " was banned from the channel!")
+                    })
+                }).catch((error) => {
+                    console.log(" - " + "TrashMates API: CREATE VIEWER FAILED".red)
+                    console.log(" - " + (viewer_data.id).red + " was banned from the channel!")
+                })
+            })
+        }).catch((error) => {
+            console.log(error)
+            console.log(" - " + "Twitch API: FETCH VIEWER FAILED".red)
         })
 
     }

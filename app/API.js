@@ -176,6 +176,33 @@ module.exports = class API {
 
 
 	/**
+	 * GET - FEtch the user's data from Twitch, thanks to his username
+	 * @param {string} username 
+	 */
+	fetchViewerFromTwitchByUsername(username) {
+		
+		return new Promise((resolve, reject) => {
+
+			let generated_url = this.twitch.url + "users/?login=" + username
+
+			// We make a GET request to the Twitch API if the generated url
+			// looks like https://twitch.tv/helix/users/?login=XXX
+			if (generated_url != this.twitch.url + "users/") {
+				request(generated_url, {method: "GET", headers: {"Client-ID": this.twitch.key}}, (errors, response, body) => {
+
+					if (errors || response.statusCode != 200) {
+						reject({"errros": "Twitch API: Fetch User's data failed"})
+					} else {
+						resolve(JSON.parse(body).data[0])
+					}
+				})
+			}
+
+		})
+	}
+
+
+	/**
 	 * GET - Fetch the 100 latest followers ID, from the Twitch API
 	 */
 	fetchLatestFollowersID() {
@@ -238,7 +265,6 @@ module.exports = class API {
 		})
 
 	}
-
 
 	/**
 	 * GET - Fetch the Stream data for the Twitch User, from the Twitch API
