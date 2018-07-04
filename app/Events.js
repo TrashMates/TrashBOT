@@ -376,7 +376,7 @@ module.exports = class Events {
     static onDiscordMessage(message) {
 
         let viewer_data = {
-            "viewer_id": message.author.id,
+            "id": message.author.id,
             "username": message.author.username,
             "discriminator": message.author.discriminator,
             "role": message.member.highestRole.name
@@ -427,7 +427,7 @@ module.exports = class Events {
     static onDiscordMemberAdd(member) {
 
         let viewer_data = {
-            "viewer_id": member.user.id,
+            "id": member.user.id,
             "username": member.user.username,
             "discriminator": member.user.discriminator,
             "role": member.highestRole.name
@@ -467,7 +467,7 @@ module.exports = class Events {
     static onDiscordMemberUpdate(oldMember, newMember) {
 
         let viewer_data = {
-            "viewer_id": newMember.user.id,
+            "id": newMember.user.id,
             "username": newMember.user.username,
             "discriminator": newMember.user.discriminator,
             "role": newMember.highestRole.name
@@ -514,7 +514,7 @@ module.exports = class Events {
     static onDiscordMemberRemove(member) {
 
         let viewer_data = {
-            "viewer_id": member.user.id,
+            "id": member.user.id,
             "username": member.user.username,
             "discriminator": member.user.discriminator,
             "role": "leavers"
