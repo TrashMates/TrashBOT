@@ -50,21 +50,16 @@ module.exports = class Events {
         API.fetchViewer("Twitch", viewer_data.id).then((viewer) => {
             // THE USER HAS CHANGED USERNAME, UPDATE THE DATABASE
             if (viewer_data.username != viewer.username) {
-                let event_data = {
-                    "viewer_id": userstate["user-id"],
-                    "type": "VIEWER_MODIFIED",
-                    "content": viewer.username + " has changed username: " + viewer_data.username
-                }
-
                 // We don't wanna change the Role of the user, only its username
                 // If it became a Sub or a Follower, it should have been modfied
                 // If it became a Streamer or a Moderator, we should have changed it manually
                 viewer_data.role = viewer.role
 
                 API.updateViewer("Twitch", viewer_data).then((viewer_updated) => {
-                    API.createEvent("Twitch", event_data).then((event) => {}).catch((error) => {
-                        console.log(" - " + "TrashMates API: CREATE EVENT FAILED".red)
-                    })
+                    // Event creation is automated on the Backend
+                    // API.createEvent("Twitch", event_data).then((event) => {}).catch((error) => {
+                    //     console.log(" - " + "TrashMates API: CREATE EVENT FAILED".red)
+                    // })
                 }).catch((error) => {
                     console.log(" - " + "TrashMates API: UPDATE VIEWER FAILED".red)
                 })
@@ -499,9 +494,10 @@ module.exports = class Events {
 
         if (event_data.content) {
             API.updateViewer("Discord", viewer_data).then((viewer_updated) => {
-                API.createEvent("Discord", event_data).then((event) => {}).catch((error) => {
-                    console.log(" - " + "TrashMates API: CREATE EVENT FAILED".red)
-                })
+                // Event creation is automated on the Backend
+                // API.createEvent("Discord", event_data).then((event) => {}).catch((error) => {
+                //     console.log(" - " + "TrashMates API: CREATE EVENT FAILED".red)
+                // })
             }).catch((error) => {
                 console.log(" - " + "TrashMates API: UPDATE VIEWER FAILED".red)
             })
@@ -521,7 +517,7 @@ module.exports = class Events {
             "viewer_id": member.user.id,
             "username": member.user.username,
             "discriminator": member.user.discriminator,
-            "role": "@everyone"
+            "role": "leavers"
         }
 
         let event_data = {
