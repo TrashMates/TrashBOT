@@ -108,6 +108,9 @@ module.exports = class Events {
 
 
         API.fetchViewer("Twitch", viewer_data.id).then((viewer) => {
+            API.createEvent("Twitch", event_data).then((created_event) => {}).catch((errors) => {
+                console.log(" - " + "TrashMates API: CREATE EVENT FAILED".red)
+            })
 
             if (viewer.role == "Viewer") {
                 API.updateViewer("Twitch", viewer_data).then((updated_viewer) => {
@@ -117,11 +120,6 @@ module.exports = class Events {
                     console.log(" - " + (viewer_data.id).red + " has followed the channel")
                 })
             }
-
-            API.createEvent("Twitch", event_data).then((created_event) => {}).catch((errors) => {
-                console.log(" - " + "TrashMates API: CREATE EVENT FAILED".red)
-            })
-
         }).catch((errors) => {
             API.createViewer("Twitch", viewer_data).then((created_viewer) => {
                 API.createEvent("Twitch", event_data).then((create_event) => {
@@ -167,15 +165,15 @@ module.exports = class Events {
 
 
         API.fetchViewer("Twitch", viewer_data.id).then((viewer) => {
+            API.createEvent("Twitch", event_data).then((event) => {}).catch((error) => {
+                console.log(" - " + "TrashMates API: CREATE EVENT FAILED".red)
+            })
+
             API.updateViewer("Twitch", viewer_data).then((viewer) => {
                 console.log(" - " + (viewer_data.id).green + " has subscribed to the channel!")
             }).catch((error) => {
                 console.log(" - " + "TrashMates API: UPDATE EVENT FAILED".red)
                 console.log(" - " + (viewer_data.id).red + " has subscribed to the channel!")
-            })
-
-            API.createEvent("Twitch", event_data).then((event) => {}).catch((error) => {
-                console.log(" - " + "TrashMates API: CREATE EVENT FAILED".red)
             })
         }).catch((error) => {
             API.createViewer("Twitch", viewer_data).then((viewer) => {
@@ -468,7 +466,7 @@ module.exports = class Events {
 
         let viewer_data = {
             "id": newMember.user.id,
-            "username": newMember.user.username,
+            "username": newMember.displayName,
             "discriminator": newMember.user.discriminator,
             "role": newMember.highestRole.name
         }
