@@ -10,7 +10,7 @@
 		"discord.js": "^11.3.2",
 		"iconv": "^2.3.0",
 		"request": "^2.87.0",
-		"twitch-js": "^2.0.0-alpha.21"
+		"twitch-js": "^1.2.12"
 	},
 	"scripts": {
 		"debug": "node --nolazy --inspect-brk=9229 bot.js"

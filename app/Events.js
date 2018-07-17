@@ -1,5 +1,5 @@
 // TrashBOT - Events
-// VERSION: 3.00
+// VERSION: 3.04
 // AUTHOR: TiCubius <trashmates@protonmail.com>
 
 const APIjs = require("./API.js")
@@ -348,7 +348,7 @@ module.exports = class Events {
         settings.discord.embed.footer.text = "EN LIVE DEPUIS " + date 
         settings.discord.embed.fields[0].value = stream.title
         settings.discord.embed.fields[1].value = stream.game.name
-        settings.discord.embed.image.url = "https://static-cdn.jtvnw.net/previews-ttv/live_user_" + settings.api.twitch.username + "-1280x720.jpg"
+        settings.discord.embed.image.url = "https://static-cdn.jtvnw.net/previews-ttv/live_user_" + settings.api.twitch.username.toLowerCase() + "-1280x720.jpg"
         let embed = settings.discord.embed
 
         // Send a Discord Message containing all the informations

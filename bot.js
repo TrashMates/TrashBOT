@@ -1,12 +1,12 @@
 // TrashBOT
-// VERSION: V3.00
+// VERSION: V3.04
 // AUTHOR: TiCubius <trashmates@protonmail.com>
 
 console.log('\033c');
 console.log(" ")
 console.log(" *** ")
 console.log(" * TrashBOT")
-console.log(" * VERSION: V3.03")
+console.log(" * VERSION: V3.04")
 console.log(" *** ")
 console.log(" ")
 
@@ -15,18 +15,19 @@ console.log(" ")
 const fs = require("fs")
 const colors = require("colors")
 
-const tmijs = require("twitch-js")
+const TwitchJS = require('twitch-js')
 const APIjs = require("./app/API.js")
 const discordjs = require("discord.js")
 
 // SETTINGS
 let isStreaming = false
+let streamTitle = null
 let saveNewFollowers = false
 const settings = JSON.parse(fs.readFileSync("app/config.json"))
 
 // CLIENTS
 const Discord = new discordjs.Client()
-const Twitch = new tmijs.client(settings.twitch)
+const Twitch = TwitchJS.client(settings.twitch)
 const Event = require("./app/Events.js")
 const API = new APIjs()
 
@@ -73,9 +74,11 @@ setInterval(() => {
 
         if (!isStreaming && Object.keys(stream).length == 0) {
             // console.log(" - NOT STREAMING")
-        } else if (!isStreaming && Object.keys(stream).length > 0) {
-			isStreaming = true
-			Event.onTwitchStream(stream, settings, Discord)
+        } else if (!isStreaming && Object.keys(stream).length > 0 && stream.title !== streamTitle) {
+            isStreaming = true
+            streamTitle = stream.title
+            console.log(streamTitle)
+			// Event.onTwitchStream(stream, settings, Discord)
 
 			console.log(" - " + "DETECTED NEW STREAM: ".green + (stream.title).cyan + " on ".green + (stream.game.name).cyan)
         } else if (isStreaming && Object.keys(stream).length == 0) {
