@@ -1,12 +1,12 @@
 // TrashBOT
-// VERSION: V3.04
+// VERSION: V3.05
 // AUTHOR: TiCubius <trashmates@protonmail.com>
 
 console.log('\033c');
 console.log(" ")
 console.log(" *** ")
 console.log(" * TrashBOT")
-console.log(" * VERSION: V3.04")
+console.log(" * VERSION: V3.05")
 console.log(" *** ")
 console.log(" ")
 
@@ -57,7 +57,7 @@ setInterval(() => {
         if (saveNewFollowers) {
             followers.forEach((follower) => {
                 Event.onTwitchFollows(follower)
-            })    
+            })
         } else {
             saveNewFollowers = true
         }
@@ -66,7 +66,7 @@ setInterval(() => {
     })
 
     API.fetchStream().then((stream) => {
-        
+
         // CASE 1: LOCAL: OFF; DISTANT: OFF - NO CHANGE
         // CASE 2: LOCAL: OFF; DISTANT: ON; - ALERT + CHANGE STATUS
         // CASE 3: LOCAL: ON; DISTANT OFF;  - CHANGE STATUS
@@ -77,9 +77,8 @@ setInterval(() => {
         } else if (!isStreaming && Object.keys(stream).length > 0 && stream.title !== streamTitle) {
             isStreaming = true
             streamTitle = stream.title
-            console.log(streamTitle)
-			// Event.onTwitchStream(stream, settings, Discord)
 
+            Event.onTwitchStream(stream, settings, Discord)
 			console.log(" - " + "DETECTED NEW STREAM: ".green + (stream.title).cyan + " on ".green + (stream.game.name).cyan)
         } else if (isStreaming && Object.keys(stream).length == 0) {
 			isStreaming = false
