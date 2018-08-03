@@ -1,12 +1,12 @@
 // TrashBOT
-// VERSION: V3.05
+// VERSION: V3.06
 // AUTHOR: TiCubius <trashmates@protonmail.com>
 
 console.log('\033c');
 console.log(" ")
 console.log(" *** ")
 console.log(" * TrashBOT")
-console.log(" * VERSION: V3.05")
+console.log(" * VERSION: V3.06")
 console.log(" *** ")
 console.log(" ")
 

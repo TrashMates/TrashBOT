@@ -1,5 +1,5 @@
 // TrashBOT - Events
-// VERSION: 3.04
+// VERSION: 3.06
 // AUTHOR: TiCubius <trashmates@protonmail.com>
 
 const APIjs = require("./API.js")
@@ -193,9 +193,9 @@ module.exports = class Events {
 
     /**
      * Triggered when a Twitch User has cheered to the Twitch Channel
-     * @param {string} channel 
-     * @param {object} userstate 
-     * @param {string} message 
+     * @param {string} channel
+     * @param {object} userstate
+     * @param {string} message
      */
     static onTwitchCheer(channel, userstate, message) {
 
@@ -237,10 +237,10 @@ module.exports = class Events {
 
     /**
      * Triggered when a Twitch User has hosted the Twitch Channel
-     * @param {string} channel 
-     * @param {string} username 
-     * @param {Number} viewers 
-     * @param {boolean} autohost 
+     * @param {string} channel
+     * @param {string} username
+     * @param {Number} viewers
+     * @param {boolean} autohost
      */
     static onTwitchHosted(channel, username, viewers, autohost) {
 
@@ -250,13 +250,13 @@ module.exports = class Events {
                 "username": user.display_name || user.login,
                 "role": 'Viewer'
             }
-            
+
             let event_data = {
                 "viewer_id": user.id,
                 "type": "VIEWER_HOSTING",
                 "content": `${viewer_data.username} has hosted the channel for ${viewers} viewers!`
             }
-            
+
             if (autohost) {event_data.content += " [AUTOHOST]"}
 
             API.fetchViewer("Twitch", viewer_data.id).then((viewer) => {
@@ -287,8 +287,8 @@ module.exports = class Events {
 
     /**
      * Triggered when a Twitch User was banned from the Twitch Channel
-     * @param {string} channel 
-     * @param {object} username 
+     * @param {string} channel
+     * @param {object} username
      * @param {reason} reason
      */
     static onTwitchBan(channel, username, reason) {
@@ -299,13 +299,13 @@ module.exports = class Events {
                 "username": user.display_name || user.login,
                 "role": 'Viewer'
             }
-            
+
             let event_data = {
                 "viewer_id": user.id,
                 "type": "VIEWER_BANNED",
                 "content": `${viewer_data.username} was banned from the channel!`
             }
-            
+
             if (reason) {event_data.content += " [" + reason + "]"}
 
             API.fetchViewer("Twitch", viewer_data.id).then((viewer) => {
@@ -345,14 +345,17 @@ module.exports = class Events {
 
         let date = new Date(stream.started_at).toISOString().replace(/T/, ' ').replace(/\..+/, '')
 
-        settings.discord.embed.footer.text = "EN LIVE DEPUIS " + date 
+        // RNG is used to bypass Discord's image caching
+        let random = Math.floor(Math.random()*1000000)
+
+        settings.discord.embed.footer.text = "EN LIVE DEPUIS " + date
         settings.discord.embed.fields[0].value = stream.title
         settings.discord.embed.fields[1].value = stream.game.name
-        settings.discord.embed.image.url = "https://static-cdn.jtvnw.net/previews-ttv/live_user_" + settings.api.twitch.username.toLowerCase() + "-1280x720.jpg"
+        settings.discord.embed.image.url = `https://static-cdn.jtvnw.net/previews-ttv/live_user_${settings.api.twitch.username.toLowerCase()}-1280x720.jpg?${random}`
         let embed = settings.discord.embed
 
         // Send a Discord Message containing all the informations
-        // Note: Most of the Streaem informations is 
+        // Note: Most of the Stream informations is
         // displayed thanks to Discord Embeds
         Discord.guilds
           .get(settings.discord.server_id).channels
